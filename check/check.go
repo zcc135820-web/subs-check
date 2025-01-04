@@ -66,17 +66,18 @@ func New() *Check {
 		PrintProgress: config.GlobalConfig.PrintProgress,
 	}
 	//创建一个Result数组
-	results := make([]Result, 0)
 	return &Check{
-		config:  config,
-		results: results,
-		mu:      sync.Mutex{},
+		config: config,
+		mu:     sync.Mutex{},
 	}
 }
 
 func (c *Check) Start() error {
 
 	proxies, err := c.GetProxyFromSubs()
+
+	//清空结果
+	c.results = make([]Result, 0)
 
 	if err != nil {
 		return fmt.Errorf("获取节点失败: %v", err)
@@ -206,7 +207,7 @@ func (c *Check) GetProxyFromSubs() ([]map[string]any, error) {
 		var err error
 		for retries := 0; retries < 30; retries++ {
 			resp, err = http.Get(subUrl)
-			if err == nil {
+			if err == nil && resp.StatusCode == 200 {
 				break
 			}
 			log.Errorln("获取订阅链接失败: %v,重试次数: %d", err, retries+1)
@@ -224,7 +225,9 @@ func (c *Check) GetProxyFromSubs() ([]map[string]any, error) {
 
 		var config map[string]any
 		if err := yaml.Unmarshal(data, &config); err != nil {
-			return nil, err
+			log.Errorln("解析订阅链接失败: %v", err)
+			log.Errorln("订阅链接: %s", subUrl)
+			continue
 		}
 
 		// 添加空值检查
