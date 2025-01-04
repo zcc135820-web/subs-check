@@ -128,8 +128,7 @@ export default {
                 });
             }
 
-            // 处理 KV 操作请求
-            if (url.pathname === '/kv') {
+            if (url.pathname === '/storage') {
                 // 验证 token
                 if (!await validateToken(url, env)) {
                     return new Response(JSON.stringify({
@@ -154,31 +153,30 @@ export default {
                         });
                     }
 
-                    const value = await env.SUB_KV.get(key);
-                    if (value === null) {
-                        return new Response(JSON.stringify({
-                            code: 404,
-                            message: '未找到该键对应的值'
-                        }), {
-                            status: 404,
-                            headers: { 'Content-Type': 'application/json' }
-                        });
-                    }
-
                     try {
-                        const bytes = atob(value);
-                        const decodedValue = new TextDecoder().decode(
-                            Uint8Array.from(bytes, c => c.charCodeAt(0))
-                        );
-                        return new Response(decodedValue, {
+                        const object = await env.SUB_BUCKET.get(key);
+
+                        if (object === null) {
+                            return new Response(JSON.stringify({
+                                code: 404,
+                                message: '未找到该键对应的值'
+                            }), {
+                                status: 404,
+                                headers: { 'Content-Type': 'application/json' }
+                            });
+                        }
+
+                        const data = await object.text();
+                        return new Response(data, {
                             headers: { 'Content-Type': 'text/plain; charset=utf-8' }
                         });
-                    } catch (e) {
+                    } catch (error) {
                         return new Response(JSON.stringify({
-                            code: 400,
-                            message: '数据解码失败'
+                            code: 500,
+                            message: '读取数据失败',
+                            error: error.message
                         }), {
-                            status: 400,
+                            status: 500,
                             headers: { 'Content-Type': 'application/json' }
                         });
                     }
@@ -198,11 +196,7 @@ export default {
                     }
 
                     try {
-                        const bytes = new TextEncoder().encode(value);
-                        const encodedValue = btoa(
-                            String.fromCharCode.apply(null, bytes)
-                        );
-                        await env.SUB_KV.put(key, encodedValue);
+                        await env.SUB_BUCKET.put(key, value);
                         return new Response(JSON.stringify({
                             code: 200,
                             message: '数据写入成功'
