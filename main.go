@@ -16,6 +16,12 @@ import (
 var checker *check.Check
 
 func init() {
+	version, err := os.ReadFile("/app/version")
+	if err != nil {
+		log.Errorln("读取版本文件失败: %v", err)
+		os.Exit(1)
+	}
+	log.Infoln("构建时间: %s", string(version))
 	yamlFile, err := os.ReadFile("/app/config/config.yaml")
 	if err != nil {
 		log.Errorln("读取配置文件失败: %v", err)
@@ -45,6 +51,8 @@ func main() {
 }
 func checkIP() {
 
+	log.Infoln("开始检测IP")
+
 	err := checker.Start()
 
 	if err != nil {
@@ -57,4 +65,5 @@ func checkIP() {
 	results := checker.GetResults()
 
 	save.SaveConfig(results)
+
 }
