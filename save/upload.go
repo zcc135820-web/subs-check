@@ -31,7 +31,7 @@ func UploadToKV(yamlData []byte, key string) error {
 
 	// 创建POST请求
 	req, err := http.NewRequest("POST",
-		fmt.Sprintf("%s/kv?token=%s", config.GlobalConfig.WorkerURL, config.GlobalConfig.WorkerToken),
+		fmt.Sprintf("%s/storage?token=%s", config.GlobalConfig.WorkerURL, config.GlobalConfig.WorkerToken),
 		bytes.NewBuffer(jsonData))
 	if err != nil {
 		return fmt.Errorf("创建请求失败: %v", err)
