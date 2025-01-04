@@ -1,51 +1,49 @@
-NodeParam:
-  type: http
-  interval: 86400
-  health-check:
-    enable: true
-    url: http://www.google.com/generate_204
-    interval: 60
 proxy-providers:
   ProviderALL:
-    url: http://192.168.31.49:8080/all.yaml # 在这里写你的订阅链接
+    url: https://
     type: http
-    interval: 86400
+    interval: 600
+    proxy: DIRECT
     health-check:
       enable: true
       url: http://www.google.com/generate_204
       interval: 60
     path: ./proxy_provider/ALL.yaml
   ProviderOpenai:
-    url: http://192.168.31.49:8080/openai.yaml # 在这里写你的订阅链接
+    url: https://
     type: http
-    interval: 86400
+    interval: 600
+    proxy: DIRECT
     health-check:
       enable: true
       url: http://www.google.com/generate_204
       interval: 60
     path: ./proxy_provider/Openai.yaml
   ProviderYoutube:
-    url: http://192.168.31.49:8080/youtube.yaml # 在这里写你的订阅链接
+    url: https://
     type: http
-    interval: 86400
+    interval: 600
+    proxy: DIRECT
     health-check:
       enable: true
       url: http://www.google.com/generate_204
       interval: 60
     path: ./proxy_provider/Youtube.yaml
   ProviderNetflix:
-    url: http://192.168.31.49:8080/netflix.yaml # 在这里写你的订阅链接
+    url: https://
     type: http
-    interval: 86400
+    interval: 600
+    proxy: DIRECT
     health-check:
       enable: true
       url: http://www.google.com/generate_204
       interval: 60
     path: ./proxy_provider/Netflix.yaml
   ProviderDisney:
-    url: http://192.168.31.49:8080/disney.yaml # 在这里写你的订阅链接
+    url: https://
     type: http
-    interval: 86400
+    interval: 600
+    proxy: DIRECT
     health-check:
       enable: true
       url: http://www.google.com/generate_204
@@ -157,108 +155,6 @@ dns:
     fallback: ['https://doh.dns.sb/dns-query', 'https://dns.cloudflare.com/dns-query', 'https://dns.twnic.tw/dns-query', 'tls://8.8.4.4:853']
     fallback-filter: { geoip: true, ipcidr: [240.0.0.0/4, 0.0.0.0/32] }
 
-FilterHK: ^(?=.*((?i)🇭🇰|香港|(\b(HK|Hong)\b))).*$
-FilterTW: ^(?=.*((?i)🇹🇼|台湾|(\b(TW|Taiwan)\b))).*$
-FilterJP: ^(?=.*((?i)🇯🇵|日本|川日|东京|大阪|泉日|埼玉|(\b(JP|Japan)\b))).*$
-FilterKR: ^(?=.*((?i)🇰🇷|韩国|韓|首尔|(\b(KR|Korea)\b))).*$
-FilterSG: ^(?=.*((?i)🇸🇬|新加坡|狮|(\b(SG|Singapore)\b))).*$
-FilterUS: ^(?=.*((?i)🇺🇸|美国|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|(\b(US|United States)\b))).*$
-FilterUK: ^(?=.*((?i)🇬🇧|英国|伦敦|(\b(UK|United Kingdom)\b))).*$
-FilterFR: ^(?=.*((?i)🇫🇷|法国|(\b(FR|France)\b))).*$
-FilterDE: ^(?=.*((?i)🇩🇪|德国|(\b(DE|Germany)\b))).*$
-FilterCA: ^(?=.*((?i)🇨🇦|加拿大|(\b(CA|Canada)\b))).*$
-FilterAU: ^(?=.*((?i)🇦🇺|澳大利亚|(\b(AU|Australia)\b))).*$
-FilterNL: ^(?=.*((?i)🇳🇱|荷兰|(\b(NL|Netherlands)\b))).*$
-FilterRU: ^(?=.*((?i)🇷🇺|俄罗斯|(\b(RU|Russia)\b))).*$
-FilterHU: ^(?=.*((?i)🇭🇺|匈牙利|(\b(HU|Hungary)\b))).*$
-FilterUA: ^(?=.*((?i)🇺🇦|乌克兰|(\b(UA|Ukraine)\b))).*$
-FilterPL: ^(?=.*((?i)🇵🇱|波兰|(\b(PL|Poland)\b))).*$
-FilterAP: ^(?=.*((?i)亚太|(\b(AP|Asia Pacific)\b))).*$
-FilterIR: ^(?=.*((?i)🇮🇷|伊朗|(\b(IR|Iran)\b))).*$
-FilterIT: ^(?=.*((?i)🇮🇹|意大利|(\b(IT|Italy)\b))).*$
-FilterGame: ^(?=.*((?i)游戏|🎮|(\b(GAME)\b)))(?!.*((?i)回国|校园)).*$
-FilterOther: ^(?=.*((?i)其他|(\b(OTHER)\b))).*$
-FallBack:
-  type: fallback
-  interval: 10
-  lazy: true
-  url: http://www.google.com/generate_204
-  disable-udp: false
-  timeout: 2000
-  max-failed-times: 3
-FallBackOpenai:
-  type: fallback
-  interval: 10
-  lazy: true
-  url: https://openai.com
-  disable-udp: false
-  timeout: 2000
-  max-failed-times: 3
-FallBackNetflix:
-  type: fallback
-  interval: 10
-  lazy: true
-  url: https://netflix.com
-  disable-udp: false
-  timeout: 2000
-  max-failed-times: 3
-FallBackDisney:
-  type: fallback
-  interval: 10
-  lazy: true
-  url: https://disney.com
-  disable-udp: false
-  timeout: 2000
-  max-failed-times: 3
-FallBackYoutube:
-  type: fallback
-  interval: 10
-  lazy: true
-  url: https://youtube.com
-  disable-udp: false
-  timeout: 2000
-  max-failed-times: 3
-OnlineTest:
-  type: select
-  interval: 300
-  url: http://www.google.com/generate_204
-  lazy: true
-  timeout: 2000
-  max-failed-times: 3
-OnlineTestOpenai:
-  type: select
-  interval: 300
-  url: https://openai.com
-  lazy: true
-  timeout: 2000
-  max-failed-times: 3
-OnlineTestNetflix:
-  type: select
-  interval: 300
-  url: https://netflix.com
-  lazy: true
-  timeout: 2000
-  max-failed-times: 3
-OnlineTestDisney:
-  type: select
-  interval: 300
-  url: https://disney.com
-  lazy: true
-  timeout: 2000
-  max-failed-times: 3
-OnlineTestYoutube:
-  type: select
-  interval: 300
-  url: https://youtube.com
-  lazy: true
-  timeout: 2000
-  max-failed-times: 3
-RuleSet:
-  type: http
-  behavior: classical
-  interval: 86400
-  format: yaml
-  proxy: DIRECT
 proxy-groups:
   - name: Proxy
     type: select
@@ -287,11 +183,11 @@ proxy-groups:
       - 🇮🇹 意大利节点
       - 🇮🇷 伊朗节点
       - 🇦🇸 亚太节点
-    icon: https://raw.githubusercontent.com/mihomo-party-org/mihomo-party/master/resources/icon.png
+    icon: https://cdn.jsdelivr.net/gh/mihomo-party-org/mihomo-party/resources/icon.png
   - name: Cloudflare
     type: select
     interval: 300
-    url: http://www.google.com/generate_204
+    url: http://cp.cloudflare.com
     lazy: true
     timeout: 2000
     max-failed-times: 3
@@ -349,9 +245,9 @@ proxy-groups:
       - 其他节点
     icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/microsoft-bing.svg
   - name: Github
-    type: select
+    type: url-test
     interval: 300
-    url: http://www.google.com/generate_204
+    url: https://github.com
     lazy: true
     timeout: 2000
     max-failed-times: 3
@@ -538,7 +434,11 @@ proxy-groups:
       - 其他节点
     icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/spotify.svg
   - name: Telegram
-    type: select
+    type: url-test
+    url: https://telegram.org
+    interval: 300
+    timeout: 2000
+    max-failed-times: 3
     proxies:
       - 🇭🇰 香港节点
       - 🇯🇵 日本节点
@@ -643,7 +543,7 @@ proxy-groups:
     proxies:
       - DIRECT
       - Proxy
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Game.png
   - name: GlobalMedia
     type: select
     proxies:
@@ -667,7 +567,7 @@ proxy-groups:
       - 🇮🇷 伊朗节点
       - 🇦🇸 亚太节点
       - 其他节点
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ForeignMedia.png
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/ForeignMedia.png
   - name: 💪 手动选择
     type: select
     use:
