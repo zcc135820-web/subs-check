@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -22,29 +23,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Config struct {
-	//订阅地址
-	SubUrls []string `yaml:"sub-urls"`
-	//根据正则排除节点
-	FilterRegex string `yaml:"filter-regex"`
-	//服务器地址
-	ServerURL string `yaml:"server-url"`
-	//下载大小
-	DownloadSize int `yaml:"download-size"`
-	//上传大小
-	UploadSize int `yaml:"upload-size"`
-	//超时时间
-	Timeout int `yaml:"timeout"`
-	//并发数
-	Concurrent int `yaml:"concurrent"`
-	//是否打印进度
-	PrintProgress bool `yaml:"print-progress"`
-}
-type Check struct {
-	config  *Config
-	results []Result
-	mu      sync.Mutex
-}
 type Result struct {
 	Proxy      map[string]any
 	Openai     bool
@@ -55,32 +33,15 @@ type Result struct {
 	Disney     bool
 }
 
-func New() *Check {
-	config := &Config{
-		SubUrls:       config.GlobalConfig.SubUrls,
-		FilterRegex:   config.GlobalConfig.FilterRegex,
-		Concurrent:    config.GlobalConfig.Concurrent,
-		Timeout:       config.GlobalConfig.Timeout,
-		DownloadSize:  config.GlobalConfig.DownloadSize,
-		UploadSize:    config.GlobalConfig.UploadSize,
-		PrintProgress: config.GlobalConfig.PrintProgress,
-	}
-	//创建一个Result数组
-	return &Check{
-		config: config,
-		mu:     sync.Mutex{},
-	}
-}
+func Check() ([]Result, error) {
 
-func (c *Check) Start() error {
-
-	proxies, err := c.GetProxyFromSubs()
+	proxies, err := GetProxyFromSubs()
 
 	//清空结果
-	c.results = make([]Result, 0)
+	results := make([]Result, 0)
 
 	if err != nil {
-		return fmt.Errorf("获取节点失败: %v", err)
+		return nil, fmt.Errorf("获取节点失败: %w", err)
 	}
 
 	log.Infoln("共获取到%d个节点", len(proxies))
@@ -89,7 +50,13 @@ func (c *Check) Start() error {
 	log.Infoln("去重后共%d个节点", len(proxies))
 
 	proxyCount := len(proxies)
-	proxyPerThread := proxyCount / c.config.Concurrent
+	var threadCount int
+	if proxyCount < config.GlobalConfig.Concurrent {
+		threadCount = proxyCount
+	} else {
+		threadCount = config.GlobalConfig.Concurrent
+	}
+	proxyPerThread := proxyCount / threadCount
 
 	// 添加进度计数器
 	var progress int32
@@ -99,7 +66,7 @@ func (c *Check) Start() error {
 
 	done := make(chan bool)
 
-	if c.config.PrintProgress {
+	if config.GlobalConfig.PrintProgress {
 		// 创建进度条打印 goroutine
 		go func() {
 			for {
@@ -122,20 +89,20 @@ func (c *Check) Start() error {
 			}
 		}()
 	}
-	log.Infoln("开始检测")
+	log.Infoln("开始检测 %d个线程", threadCount)
 	var wg sync.WaitGroup
-	for i := 0; i < c.config.Concurrent; i++ {
+	for i := 0; i < threadCount; i++ {
 		wg.Add(1)
 		start := i * proxyPerThread
 		end := (i + 1) * proxyPerThread
-		if i == c.config.Concurrent-1 {
+		if i == threadCount-1 {
 			end = proxyCount
 		}
 		go func(proxies []map[string]any) {
 			defer wg.Done()
 			for _, proxy := range proxies {
 
-				httpClient := c.CreateClient(proxy)
+				httpClient := CreateClient(proxy)
 				if httpClient == nil {
 					continue
 				}
@@ -174,9 +141,9 @@ func (c *Check) Start() error {
 				}
 				proxy["name"] = rename.Rename(proxy["name"].(string))
 				// 添加结果时加锁保护
-				c.mu.Lock()
+				mu.Lock()
 				availableCount++
-				c.results = append(c.results, Result{
+				results = append(results, Result{
 					Proxy:      proxy,
 					Cloudflare: cloudflare,
 					Google:     google,
@@ -185,26 +152,31 @@ func (c *Check) Start() error {
 					Netflix:    netflix,
 					Disney:     disney,
 				})
-				c.mu.Unlock()
+				mu.Unlock()
 			}
 		}(proxies[start:end])
 	}
 
 	wg.Wait()
-	if c.config.PrintProgress {
+	if config.GlobalConfig.PrintProgress {
 		done <- true
 	}
-	log.Infoln("共%d个可用节点", len(c.results))
-	return nil
+	log.Infoln("共%d个可用节点", len(results))
+	return results, nil
 }
 
-func (c *Check) GetProxyFromSubs() ([]map[string]any, error) {
+func GetProxyFromSubs() ([]map[string]any, error) {
 
-	log.Infoln("共设置%d个订阅链接", len(c.config.SubUrls))
+	if len(config.GlobalConfig.SubUrls) == 0 {
+		log.Errorln("未设置订阅链接")
+		os.Exit(1)
+	}
+
+	log.Infoln("共设置%d个订阅链接", len(config.GlobalConfig.SubUrls))
 
 	proxies := make([]map[string]any, 0)
 
-	for _, subUrl := range c.config.SubUrls {
+	for _, subUrl := range config.GlobalConfig.SubUrls {
 		// 添加重试逻辑
 		var resp *http.Response
 		var err error
@@ -217,7 +189,7 @@ func (c *Check) GetProxyFromSubs() ([]map[string]any, error) {
 			time.Sleep(time.Second * time.Duration(retries+1))
 		}
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("获取订阅链接失败: %w", err)
 		}
 		defer resp.Body.Close()
 
@@ -260,14 +232,14 @@ func (c *Check) GetProxyFromSubs() ([]map[string]any, error) {
 	return proxies, nil
 }
 
-func (c *Check) CreateClient(mapping map[string]any) *http.Client {
+func CreateClient(mapping map[string]any) *http.Client {
 	proxy, err := adapter.ParseProxy(mapping)
 	if err != nil {
 		return nil
 	}
 
 	return &http.Client{
-		Timeout: time.Duration(c.config.Timeout) * time.Second,
+		Timeout: time.Duration(config.GlobalConfig.Timeout) * time.Second,
 		Transport: &http.Transport{
 			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
 				host, port, err := net.SplitHostPort(addr)
@@ -289,8 +261,4 @@ func (c *Check) CreateClient(mapping map[string]any) *http.Client {
 			DisableKeepAlives: true,
 		},
 	}
-}
-
-func (c *Check) GetResults() []Result {
-	return c.results
 }
