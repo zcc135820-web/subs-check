@@ -11,14 +11,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/metacubex/mihomo/log"
-
 	"github.com/bestruirui/mihomo-check/config"
 	"github.com/bestruirui/mihomo-check/ipinfo"
 	"github.com/bestruirui/mihomo-check/platfrom"
+	proxyutils "github.com/bestruirui/mihomo-check/proxies"
 	"github.com/bestruirui/mihomo-check/rename"
 	"github.com/metacubex/mihomo/adapter"
 	"github.com/metacubex/mihomo/constant"
+	"github.com/metacubex/mihomo/log"
 	"gopkg.in/yaml.v3"
 )
 
@@ -84,6 +84,9 @@ func (c *Check) Start() error {
 	}
 
 	log.Infoln("共获取到%d个节点", len(proxies))
+
+	proxies = proxyutils.DeduplicateProxies(proxies)
+	log.Infoln("去重后共%d个节点", len(proxies))
 
 	proxyCount := len(proxies)
 	proxyPerThread := proxyCount / c.config.Concurrent
