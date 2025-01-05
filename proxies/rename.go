@@ -1,4 +1,4 @@
-package rename
+package proxies
 
 import (
 	"fmt"

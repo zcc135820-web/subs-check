@@ -16,7 +16,6 @@ import (
 	"github.com/bestruirui/mihomo-check/ipinfo"
 	"github.com/bestruirui/mihomo-check/platfrom"
 	proxyutils "github.com/bestruirui/mihomo-check/proxies"
-	"github.com/bestruirui/mihomo-check/rename"
 	"github.com/metacubex/mihomo/adapter"
 	"github.com/metacubex/mihomo/constant"
 	"github.com/metacubex/mihomo/log"
@@ -139,7 +138,7 @@ func Check() ([]Result, error) {
 				} else {
 					proxy["name"] = "未识别"
 				}
-				proxy["name"] = rename.Rename(proxy["name"].(string))
+				proxy["name"] = proxyutils.Rename(proxy["name"].(string))
 				// 添加结果时加锁保护
 				mu.Lock()
 				availableCount++
