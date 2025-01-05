@@ -16,7 +16,7 @@ type KVPayload struct {
 	Value string `json:"value"`
 }
 
-func UploadToKV(yamlData []byte, key string) error {
+func UploadToR2Storage(yamlData []byte, key string) error {
 	// 创建请求负载
 	payload := KVPayload{
 		Key:   key,

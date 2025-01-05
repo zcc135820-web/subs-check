@@ -5,9 +5,11 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/bestruirui/mihomo-check/config"
+	"github.com/bestruirui/mihomo-check/utils"
 	"github.com/metacubex/mihomo/log"
 )
 
@@ -18,13 +20,15 @@ var (
 
 // 初始化数据库的函数
 func initDB() {
-	db, err := NewCity("/app/openipdb.ipdb")
+	execPath := utils.GetExecutablePath()
+	db, err := NewCity(filepath.Join(execPath, "openipdb.ipdb"))
 	if err != nil {
 		log.Errorln("初始化IP数据库失败: %v", err)
 		return
 	}
 	cityDB = db
 }
+
 func GetIPaddrFromDNS(server string) string {
 	ns, err := net.LookupIP(server)
 	if err != nil {
@@ -85,8 +89,11 @@ func GetIPCountrynameFromdb(ip string) string {
 }
 
 func GetIPdb() {
+	execPath := utils.GetExecutablePath()
+	dbPath := filepath.Join(execPath, "openipdb.ipdb")
+
 	// 判断文件是否存在,存在则跳过
-	if _, err := os.Stat("/app/openipdb.ipdb"); err == nil {
+	if _, err := os.Stat(dbPath); err == nil {
 		log.Infoln("IP数据库已存在")
 		return
 	}
@@ -102,6 +109,10 @@ func GetIPdb() {
 		log.Errorln("读取IP数据库失败: %v", err)
 		return
 	}
-	os.WriteFile("/app/openipdb.ipdb", body, 0644)
+	err = os.WriteFile(dbPath, body, 0644)
+	if err != nil {
+		log.Errorln("保存IP数据库失败: %v", err)
+		return
+	}
 	log.Infoln("IP数据库下载成功")
 }
