@@ -12,10 +12,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bestruirui/mihomo-check/check/platfrom"
 	"github.com/bestruirui/mihomo-check/config"
-	"github.com/bestruirui/mihomo-check/ipinfo"
-	"github.com/bestruirui/mihomo-check/platfrom"
-	proxyutils "github.com/bestruirui/mihomo-check/proxies"
+	proxyutils "github.com/bestruirui/mihomo-check/proxy"
+	"github.com/bestruirui/mihomo-check/proxy/ipinfo"
 	"github.com/metacubex/mihomo/adapter"
 	"github.com/metacubex/mihomo/constant"
 	"github.com/metacubex/mihomo/log"

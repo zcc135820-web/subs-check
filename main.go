@@ -8,7 +8,7 @@ import (
 
 	"github.com/bestruirui/mihomo-check/check"
 	"github.com/bestruirui/mihomo-check/config"
-	"github.com/bestruirui/mihomo-check/ipinfo"
+	"github.com/bestruirui/mihomo-check/proxy/ipinfo"
 	"github.com/bestruirui/mihomo-check/save"
 	"github.com/bestruirui/mihomo-check/utils"
 	"github.com/metacubex/mihomo/log"
