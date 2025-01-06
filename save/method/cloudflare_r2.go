@@ -1,4 +1,4 @@
-package save
+package method
 
 import (
 	"bytes"

@@ -3,12 +3,12 @@ package save
 import (
 	"github.com/bestruirui/mihomo-check/check"
 	"github.com/bestruirui/mihomo-check/config"
+	"github.com/bestruirui/mihomo-check/save/method"
 	"github.com/metacubex/mihomo/log"
 	"gopkg.in/yaml.v3"
 )
 
 func SaveConfig(results []check.Result) {
-	log.Infoln("保存方法: %v", config.GlobalConfig.SaveMethod)
 	save := choseSaveMethod()
 	all := make([]map[string]any, 0)
 	openai := make([]map[string]any, 0)
@@ -93,7 +93,10 @@ func SaveConfig(results []check.Result) {
 func choseSaveMethod() func(yamlData []byte, key string) error {
 
 	if config.GlobalConfig.SaveMethod == "r2" {
-		return UploadToR2Storage
+		return method.UploadToR2Storage
+	}
+	if config.GlobalConfig.SaveMethod == "local" {
+		return method.SaveToLocal
 	}
 
 	return nil
