@@ -1,11 +1,12 @@
 # 是否打印进度
 print-progress: false
 # 保存方法
+# 目前支持的保存方法: r2, local
 save-method: r2
 # 检查间隔,单位分钟
-check-interval: 10
+check-interval: 30
 # 并发
-concurrent: 100
+concurrent: 200
 # 下载大小 单位MB
 download-size: 20
 # 上传大小 单位MB

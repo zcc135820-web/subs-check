@@ -5,7 +5,7 @@ const DefaultConfigTemplate = `
 print-progress: true
 
 # 并发线程数
-concurrent: 16
+concurrent: 200
 
 # 检查间隔(分钟)
 check-interval: 30
@@ -20,6 +20,7 @@ download-size: 20
 upload-size: 20
 
 # 保存方法
+# 目前支持的保存方法: r2, local
 save-method: r2
 
 # 将测速结果推送到Worker的地址
