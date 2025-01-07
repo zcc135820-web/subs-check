@@ -2,10 +2,9 @@ package proxies
 
 import (
 	"fmt"
+	"net"
 )
 
-// DeduplicateProxies 根据server和port对代理配置进行去重
-// 输入参数为代理配置切片，返回去重后的切片
 func DeduplicateProxies(proxies []map[string]any) []map[string]any {
 	// 使用map来存储唯一的代理配置
 	seen := make(map[string]map[string]any)
@@ -19,9 +18,14 @@ func DeduplicateProxies(proxies []map[string]any) []map[string]any {
 		if !serverOk || !portOk {
 			continue
 		}
+		//查询server的ip
+		serverip, err := net.LookupIP(server)
+		if err != nil {
+			continue
+		}
 
 		// 创建唯一键
-		key := fmt.Sprintf("%s:%v", server, port)
+		key := fmt.Sprintf("%s:%v", serverip, port)
 
 		// 如果这个组合之前没有出现过，将其添加到seen map中
 		if _, exists := seen[key]; !exists {
