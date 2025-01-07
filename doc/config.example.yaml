@@ -11,8 +11,8 @@ concurrent: 200
 download-size: 20
 # 上传大小 单位MB
 upload-size: 20
-# 超时时间 单位秒
-timeout: 5
+# 超时时间 单位毫秒
+timeout: 5000
 # 排除 正则
 filter-regex: ""
 #worker-url

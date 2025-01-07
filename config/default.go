@@ -10,8 +10,8 @@ concurrent: 200
 # 检查间隔(分钟)
 check-interval: 30
 
-# 超时时间(秒)
-timeout: 5
+# 超时时间(毫秒)
+timeout: 5000
 
 # 下载测试大小(MB)
 download-size: 20
