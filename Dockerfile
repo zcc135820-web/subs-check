@@ -4,8 +4,10 @@ COPY . .
 RUN go mod tidy && go build -o main .
 
 FROM alpine
-RUN apk add --no-cache ca-certificates && rm -rf /var/cache/apk/*
 ENV TZ=Asia/Shanghai
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apk add --no-cache alpine-conf ca-certificates  && \
+    /sbin/setup-timezone -z Asia/Shanghai && \
+    apk del alpine-conf && \
+    rm -rf /var/cache/apk/*
 COPY --from=builder /app/main /app/main
 CMD /app/main
