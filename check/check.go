@@ -34,6 +34,8 @@ type Result struct {
 
 func Check() ([]Result, error) {
 
+	proxyutils.ResetRenameCounter()
+
 	proxies, err := GetProxyFromSubs()
 
 	//清空结果
