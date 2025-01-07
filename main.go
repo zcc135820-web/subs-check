@@ -23,7 +23,17 @@ func init() {
 	execPath := utils.GetExecutablePath()
 
 	if *configPath == "" {
-		*configPath = filepath.Join(execPath, "config.yaml")
+		//检测config目录
+		configDir := filepath.Join(execPath, "config")
+		if _, err := os.Stat(configDir); os.IsNotExist(err) {
+			log.Infoln("config目录不存在，创建默认配置文件")
+			err = os.MkdirAll(configDir, 0755)
+			if err != nil {
+				log.Errorln("创建config目录失败: %v", err)
+				os.Exit(1)
+			}
+		}
+		*configPath = filepath.Join(configDir, "config.yaml")
 	}
 
 	yamlFile, err := os.ReadFile(*configPath)

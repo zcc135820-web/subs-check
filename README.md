@@ -38,9 +38,9 @@
 ```bash
 docker run -itd \
     --name mihomo-check \
-    -v /path/to/config.yaml:/app/config/config.yaml \
+    -v /path/to/config:/app/config \
     --restart=always \
-    bestrui/mihomocheck:latest
+    bestrui/mihomo-check:latest
 ```
 
 ### 源码直接运行
