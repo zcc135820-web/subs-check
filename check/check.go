@@ -22,6 +22,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// Result 存储节点检测结果
 type Result struct {
 	Proxy      map[string]any
 	Openai     bool
@@ -32,153 +33,192 @@ type Result struct {
 	Disney     bool
 }
 
-func Check() ([]Result, error) {
+// ProxyChecker 处理代理检测的主要结构体
+type ProxyChecker struct {
+	results     []Result
+	proxyCount  int
+	threadCount int
+	progress    int32
+	available   int32
+	mu          sync.Mutex
+	resultChan  chan Result
+	tasks       chan map[string]any
+}
 
-	proxyutils.ResetRenameCounter()
-
-	proxies, err := GetProxyFromSubs()
-
-	//清空结果
-	results := make([]Result, 0)
-
-	if err != nil {
-		return nil, fmt.Errorf("获取节点失败: %w", err)
-	}
-
-	log.Infoln("共获取到%d个节点", len(proxies))
-
-	proxies = proxyutils.DeduplicateProxies(proxies)
-	log.Infoln("去重后共%d个节点", len(proxies))
-
+// NewProxyChecker 创建新的检测器实例
+func NewProxyChecker(proxies []map[string]any) *ProxyChecker {
 	proxyCount := len(proxies)
 	threadCount := config.GlobalConfig.Concurrent
 	if proxyCount < threadCount {
 		threadCount = proxyCount
 	}
 
-	// 创建任务通道
-	tasks := make(chan map[string]any, proxyCount)
-	// 创建结果通道
-	resultChan := make(chan Result)
+	return &ProxyChecker{
+		results:     make([]Result, 0),
+		proxyCount:  proxyCount,
+		threadCount: threadCount,
+		resultChan:  make(chan Result),
+		tasks:       make(chan map[string]any, proxyCount),
+	}
+}
 
-	var progress int32
-	var availableCount int32
-	var mu sync.Mutex
+// Check 执行代理检测的主函数
+func Check() ([]Result, error) {
+	proxyutils.ResetRenameCounter()
+
+	proxies, err := GetProxyFromSubs()
+	if err != nil {
+		return nil, fmt.Errorf("获取节点失败: %w", err)
+	}
+
+	log.Infoln("共获取到%d个节点", len(proxies))
+	proxies = proxyutils.DeduplicateProxies(proxies)
+	log.Infoln("去重后共%d个节点", len(proxies))
+
+	checker := NewProxyChecker(proxies)
+	return checker.run(proxies)
+}
+
+// Run 运行检测流程
+func (pc *ProxyChecker) run(proxies []map[string]any) ([]Result, error) {
 	done := make(chan bool)
-
 	if config.GlobalConfig.PrintProgress {
-		go func() {
-			for {
-				select {
-				case <-done:
-					return
-				default:
-					mu.Lock()
-					current := progress
-					mu.Unlock()
-
-					percent := float64(current) / float64(proxyCount) * 100
-					fmt.Printf("\r进度: [%-50s] %.1f%% (%d/%d) 可用: %d",
-						strings.Repeat("=", int(percent/2))+">",
-						percent,
-						current,
-						proxyCount,
-						availableCount)
-					time.Sleep(100 * time.Millisecond)
-				}
-			}
-		}()
+		go pc.showProgress(done)
 	}
 
-	// 启动工作线程
 	var wg sync.WaitGroup
-	for i := 0; i < threadCount; i++ {
+	// 启动工作线程
+	for i := 0; i < pc.threadCount; i++ {
 		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for proxy := range tasks {
-				httpClient := CreateClient(proxy)
-				if httpClient == nil {
-					continue
-				}
-
-				mu.Lock()
-				progress++
-				mu.Unlock()
-
-				cloudflare, err := platfrom.CheckCloudflare(httpClient)
-				if err != nil || !cloudflare {
-					continue
-				}
-				google, err := platfrom.CheckGoogle(httpClient)
-				if err != nil || !google {
-					continue
-				}
-
-				openai, err := platfrom.CheckOpenai(httpClient)
-				if err != nil {
-				}
-				youtube, err := platfrom.CheckYoutube(httpClient)
-				if err != nil {
-				}
-				netflix, err := platfrom.CheckNetflix(httpClient)
-				if err != nil {
-				}
-				disney, err := platfrom.CheckDisney(httpClient)
-				if err != nil {
-				}
-
-				ipfromapi := ipinfo.GetIPaddrFromAPI(httpClient)
-				country := ipinfo.GetIPCountrynameFromdb(ipfromapi)
-				if country != "" {
-					proxy["name"] = country
-				} else {
-					proxy["name"] = "未识别"
-				}
-				proxy["name"] = proxyutils.Rename(proxy["name"].(string))
-
-				mu.Lock()
-				availableCount++
-				mu.Unlock()
-
-				resultChan <- Result{
-					Proxy:      proxy,
-					Cloudflare: cloudflare,
-					Google:     google,
-					Openai:     openai,
-					Youtube:    youtube,
-
-					Netflix: netflix,
-					Disney:  disney,
-				}
-			}
-		}()
+		go pc.worker(&wg)
 	}
 
-	// 发送任务到通道
-	go func() {
-		for _, proxy := range proxies {
-			tasks <- proxy
-		}
-		close(tasks)
-	}()
+	// 发送任务
+	go pc.distributeProxies(proxies)
 
 	// 收集结果
-	go func() {
-		for result := range resultChan {
-			results = append(results, result)
-		}
-	}()
+	go pc.collectResults()
 
 	wg.Wait()
-	close(resultChan)
+	close(pc.resultChan)
 
 	if config.GlobalConfig.PrintProgress {
 		done <- true
 	}
 
-	log.Infoln("共%d个可用节点", len(results))
-	return results, nil
+	log.Infoln("共%d个可用节点", len(pc.results))
+	return pc.results, nil
+}
+
+// worker 处理单个代理检测的工作线程
+func (pc *ProxyChecker) worker(wg *sync.WaitGroup) {
+	defer wg.Done()
+	for proxy := range pc.tasks {
+		if result := pc.checkProxy(proxy); result != nil {
+			pc.resultChan <- *result
+		}
+		pc.incrementProgress()
+	}
+}
+
+// checkProxy 检测单个代理
+func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
+	httpClient := CreateClient(proxy)
+	if httpClient == nil {
+		return nil
+	}
+
+	cloudflare, err := platfrom.CheckCloudflare(httpClient)
+	if err != nil || !cloudflare {
+		return nil
+	}
+
+	google, err := platfrom.CheckGoogle(httpClient)
+	if err != nil || !google {
+		return nil
+	}
+
+	// 执行其他平台检测
+	openai, _ := platfrom.CheckOpenai(httpClient)
+	youtube, _ := platfrom.CheckYoutube(httpClient)
+	netflix, _ := platfrom.CheckNetflix(httpClient)
+	disney, _ := platfrom.CheckDisney(httpClient)
+
+	// 更新代理名称
+	pc.updateProxyName(proxy, httpClient)
+	pc.incrementAvailable()
+
+	return &Result{
+		Proxy:      proxy,
+		Cloudflare: cloudflare,
+		Google:     google,
+		Openai:     openai,
+		Youtube:    youtube,
+		Netflix:    netflix,
+		Disney:     disney,
+	}
+}
+
+// updateProxyName 更新代理名称
+func (pc *ProxyChecker) updateProxyName(proxy map[string]any, client *http.Client) {
+	ipAddr := ipinfo.GetIPaddrFromAPI(client)
+	country := ipinfo.GetIPCountrynameFromdb(ipAddr)
+	if country == "" {
+		country = "未识别"
+	}
+	proxy["name"] = proxyutils.Rename(country)
+}
+
+// showProgress 显示进度条
+func (pc *ProxyChecker) showProgress(done chan bool) {
+	for {
+		select {
+		case <-done:
+			return
+		default:
+			pc.mu.Lock()
+			current := pc.progress
+			available := pc.available
+			pc.mu.Unlock()
+
+			percent := float64(current) / float64(pc.proxyCount) * 100
+			fmt.Printf("\r进度: [%-50s] %.1f%% (%d/%d) 可用: %d",
+				strings.Repeat("=", int(percent/2))+">",
+				percent,
+				current,
+				pc.proxyCount,
+				available)
+			time.Sleep(100 * time.Millisecond)
+		}
+	}
+}
+
+// 辅助方法
+func (pc *ProxyChecker) incrementProgress() {
+	pc.mu.Lock()
+	pc.progress++
+	pc.mu.Unlock()
+}
+
+func (pc *ProxyChecker) incrementAvailable() {
+	pc.mu.Lock()
+	pc.available++
+	pc.mu.Unlock()
+}
+
+// distributeProxies 分发代理任务
+func (pc *ProxyChecker) distributeProxies(proxies []map[string]any) {
+	for _, proxy := range proxies {
+		pc.tasks <- proxy
+	}
+	close(pc.tasks)
+}
+
+// collectResults 收集检测结果
+func (pc *ProxyChecker) collectResults() {
+	for result := range pc.resultChan {
+		pc.results = append(pc.results, result)
+	}
 }
 
 func GetProxyFromSubs() ([]map[string]any, error) {
@@ -272,7 +312,7 @@ func CreateClient(mapping map[string]any) *http.Client {
 				})
 			},
 			// 设置连接超时
-			IdleConnTimeout: 5 * time.Second,
+			IdleConnTimeout: time.Duration(config.GlobalConfig.Timeout) * time.Millisecond,
 			// 关闭keepalive
 			DisableKeepAlives: true,
 		},
