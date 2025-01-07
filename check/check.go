@@ -51,24 +51,22 @@ func Check() ([]Result, error) {
 	log.Infoln("去重后共%d个节点", len(proxies))
 
 	proxyCount := len(proxies)
-	var threadCount int
-	if proxyCount < config.GlobalConfig.Concurrent {
+	threadCount := config.GlobalConfig.Concurrent
+	if proxyCount < threadCount {
 		threadCount = proxyCount
-	} else {
-		threadCount = config.GlobalConfig.Concurrent
 	}
-	proxyPerThread := proxyCount / threadCount
 
-	// 添加进度计数器
+	// 创建任务通道
+	tasks := make(chan map[string]any, proxyCount)
+	// 创建结果通道
+	resultChan := make(chan Result)
+
 	var progress int32
-	// 可用数量
 	var availableCount int32
 	var mu sync.Mutex
-
 	done := make(chan bool)
 
 	if config.GlobalConfig.PrintProgress {
-		// 创建进度条打印 goroutine
 		go func() {
 			for {
 				select {
@@ -78,6 +76,7 @@ func Check() ([]Result, error) {
 					mu.Lock()
 					current := progress
 					mu.Unlock()
+
 					percent := float64(current) / float64(proxyCount) * 100
 					fmt.Printf("\r进度: [%-50s] %.1f%% (%d/%d) 可用: %d",
 						strings.Repeat("=", int(percent/2))+">",
@@ -90,29 +89,23 @@ func Check() ([]Result, error) {
 			}
 		}()
 	}
-	log.Infoln("开始检测 %d个线程", threadCount)
+
+	// 启动工作线程
 	var wg sync.WaitGroup
 	for i := 0; i < threadCount; i++ {
 		wg.Add(1)
-		start := i * proxyPerThread
-		end := (i + 1) * proxyPerThread
-		if i == threadCount-1 {
-			end = proxyCount
-		}
-		go func(proxies []map[string]any) {
+		go func() {
 			defer wg.Done()
-			for _, proxy := range proxies {
-
+			for proxy := range tasks {
 				httpClient := CreateClient(proxy)
 				if httpClient == nil {
 					continue
 				}
-				// 更新进度
+
 				mu.Lock()
 				progress++
 				mu.Unlock()
 
-				// TODO: 测试节点
 				cloudflare, err := platfrom.CheckCloudflare(httpClient)
 				if err != nil || !cloudflare {
 					continue
@@ -121,6 +114,7 @@ func Check() ([]Result, error) {
 				if err != nil || !google {
 					continue
 				}
+
 				openai, err := platfrom.CheckOpenai(httpClient)
 				if err != nil {
 				}
@@ -133,6 +127,7 @@ func Check() ([]Result, error) {
 				disney, err := platfrom.CheckDisney(httpClient)
 				if err != nil {
 				}
+
 				ipfromapi := ipinfo.GetIPaddrFromAPI(httpClient)
 				country := ipinfo.GetIPCountrynameFromdb(ipfromapi)
 				if country != "" {
@@ -141,27 +136,47 @@ func Check() ([]Result, error) {
 					proxy["name"] = "未识别"
 				}
 				proxy["name"] = proxyutils.Rename(proxy["name"].(string))
-				// 添加结果时加锁保护
+
 				mu.Lock()
 				availableCount++
-				results = append(results, Result{
+				mu.Unlock()
+
+				resultChan <- Result{
 					Proxy:      proxy,
 					Cloudflare: cloudflare,
 					Google:     google,
 					Openai:     openai,
 					Youtube:    youtube,
-					Netflix:    netflix,
-					Disney:     disney,
-				})
-				mu.Unlock()
+
+					Netflix: netflix,
+					Disney:  disney,
+				}
 			}
-		}(proxies[start:end])
+		}()
 	}
 
+	// 发送任务到通道
+	go func() {
+		for _, proxy := range proxies {
+			tasks <- proxy
+		}
+		close(tasks)
+	}()
+
+	// 收集结果
+	go func() {
+		for result := range resultChan {
+			results = append(results, result)
+		}
+	}()
+
 	wg.Wait()
+	close(resultChan)
+
 	if config.GlobalConfig.PrintProgress {
 		done <- true
 	}
+
 	log.Infoln("共%d个可用节点", len(results))
 	return results, nil
 }
@@ -240,7 +255,7 @@ func CreateClient(mapping map[string]any) *http.Client {
 	}
 
 	return &http.Client{
-		Timeout: time.Duration(config.GlobalConfig.Timeout) * time.Second,
+		Timeout: time.Duration(config.GlobalConfig.Timeout) * time.Millisecond,
 		Transport: &http.Transport{
 			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
 				host, port, err := net.SplitHostPort(addr)

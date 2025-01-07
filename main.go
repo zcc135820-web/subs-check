@@ -63,7 +63,6 @@ func init() {
 
 	ipinfo.GetIPdb()
 
-	os.Setenv("GODEBUG", os.Getenv("GODEBUG")+",http2debug=0,httpclientlog=0")
 }
 
 func main() {
