@@ -6,7 +6,7 @@ RUN go mod tidy && go build -o main .
 FROM alpine
 ENV TZ=Asia/Shanghai
 RUN apk add --no-cache alpine-conf ca-certificates  && \
-    /sbin/setup-timezone -z Asia/Shanghai && \
+    /usr/sbin/setup-timezone -z Asia/Shanghai && \
     apk del alpine-conf && \
     rm -rf /var/cache/apk/*
 COPY --from=builder /app/main /app/main
