@@ -20,8 +20,14 @@ download-size: 20
 upload-size: 20
 
 # 保存方法
-# 目前支持的保存方法: r2, local
+# 目前支持的保存方法: r2, local, gist
 save-method: r2
+
+# gist id
+github-gist-id: ""
+
+# github token
+github-token: ""
 
 # 将测速结果推送到Worker的地址
 worker-url: https://example.worker.dev

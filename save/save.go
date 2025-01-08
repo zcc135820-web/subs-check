@@ -114,7 +114,17 @@ func (cs *ConfigSaver) saveCategory(category ProxyCategory) error {
 func chooseSaveMethod() func([]byte, string) error {
 	switch config.GlobalConfig.SaveMethod {
 	case "r2":
+		if err := method.ValiR2Config(); err != nil {
+			log.Errorln("R2配置不完整: %v ,使用本地保存", err)
+			return method.SaveToLocal
+		}
 		return method.UploadToR2Storage
+	case "gist":
+		if err := method.ValiGistConfig(); err != nil {
+			log.Errorln("Gist配置不完整: %v ,使用本地保存", err)
+			return method.SaveToLocal
+		}
+		return method.UploadToGist
 	case "local":
 		return method.SaveToLocal
 	default:

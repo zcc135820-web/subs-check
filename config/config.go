@@ -14,6 +14,8 @@ type Config struct {
 	Timeout       int      `yaml:"timeout"`
 	FilterRegex   string   `yaml:"filter-regex"`
 	SaveMethod    string   `yaml:"save-method"`
+	GithubToken   string   `yaml:"github-token"`
+	GithubGistID  string   `yaml:"github-gist-id"`
 	WorkerURL     string   `yaml:"worker-url"`
 	WorkerToken   string   `yaml:"worker-token"`
 	SubUrls       []string `yaml:"sub-urls"`

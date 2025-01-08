@@ -45,6 +45,17 @@ func UploadToR2Storage(yamlData []byte, key string) error {
 	return uploader.Upload(yamlData, key)
 }
 
+// valiR2Config 验证R2配置
+func ValiR2Config() error {
+	if config.GlobalConfig.WorkerURL == "" {
+		return fmt.Errorf("worker url未配置")
+	}
+	if config.GlobalConfig.WorkerToken == "" {
+		return fmt.Errorf("worker token未配置")
+	}
+	return nil
+}
+
 // Upload 执行上传操作
 func (r *R2Uploader) Upload(yamlData []byte, key string) error {
 	// 验证输入
