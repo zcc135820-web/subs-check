@@ -96,13 +96,16 @@ func (cs *ConfigSaver) categorizeProxies() {
 
 // saveCategory 保存单个类别的代理
 func (cs *ConfigSaver) saveCategory(category ProxyCategory) error {
+	if len(category.Proxies) == 0 {
+		log.Warnln("%s 节点为空，跳过", category.Name)
+		return nil
+	}
 	yamlData, err := yaml.Marshal(map[string]any{
 		"proxies": category.Proxies,
 	})
 	if err != nil {
 		return fmt.Errorf("序列化 %s 失败: %w", category.Name, err)
 	}
-
 	if err := cs.saveMethod(yamlData, category.Name); err != nil {
 		return fmt.Errorf("保存 %s 失败: %w", category.Name, err)
 	}
