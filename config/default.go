@@ -19,6 +19,12 @@ download-size: 20
 # 上传测试大小(MB)
 upload-size: 20
 
+# mihomo api url
+mihomo-api-url: https://api.mihomo.me/v3/
+
+# mihomo api secret
+mihomo-api-secret: ""
+
 # 保存方法
 # 目前支持的保存方法: r2, local, gist
 save-method: r2

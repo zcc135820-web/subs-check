@@ -21,6 +21,8 @@ type Config struct {
 	WorkerToken     string   `yaml:"worker-token"`
 	SubUrls         []string `yaml:"sub-urls"`
 	IPInfo          IPInfo   `yaml:"ip-info"`
+	MihomoApiUrl    string   `yaml:"mihomo-api-url"`
+	MihomoApiSecret string   `yaml:"mihomo-api-secret"`
 }
 
 var GlobalConfig Config

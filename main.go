@@ -125,10 +125,12 @@ func (app *App) checkProxies() error {
 
 	log.Infoln("检测完成")
 	save.SaveConfig(results)
+	utils.UpdateSubs()
 	return nil
 }
 
 func main() {
+
 	app := NewApp()
 
 	if err := app.Initialize(); err != nil {

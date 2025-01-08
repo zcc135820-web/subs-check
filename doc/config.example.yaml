@@ -15,6 +15,10 @@ upload-size: 20
 timeout: 5000
 # 排除 正则
 filter-regex: ""
+# mihomo api url
+mihomo-api-url: https://api.mihomo.me/v3/
+# mihomo api secret
+mihomo-api-secret: ""
 # github token
 github-token: ""
 # gist id
