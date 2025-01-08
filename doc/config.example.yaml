@@ -15,6 +15,12 @@ upload-size: 20
 timeout: 5000
 # 排除 正则
 filter-regex: ""
+# github token
+github-token: ""
+# gist id
+github-gist-id: ""
+# github api mirror
+github-api-mirror: ""
 #worker-url
 worker-url: https://example.worker.dev
 #worker-token

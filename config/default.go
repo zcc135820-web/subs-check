@@ -29,6 +29,9 @@ github-gist-id: ""
 # github token
 github-token: ""
 
+# github api mirror
+github-api-mirror: ""
+
 # 将测速结果推送到Worker的地址
 worker-url: https://example.worker.dev
 
