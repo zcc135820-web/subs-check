@@ -31,27 +31,27 @@ func NewConfigSaver(results []check.Result) *ConfigSaver {
 		saveMethod: chooseSaveMethod(),
 		categories: []ProxyCategory{
 			{
-				Name:    "all",
+				Name:    "all.yaml",
 				Proxies: make([]map[string]any, 0),
 				Filter:  func(result check.Result) bool { return true },
 			},
 			{
-				Name:    "openai",
+				Name:    "openai.yaml",
 				Proxies: make([]map[string]any, 0),
 				Filter:  func(result check.Result) bool { return result.Openai },
 			},
 			{
-				Name:    "youtube",
+				Name:    "youtube.yaml",
 				Proxies: make([]map[string]any, 0),
 				Filter:  func(result check.Result) bool { return result.Youtube },
 			},
 			{
-				Name:    "netflix",
+				Name:    "netflix.yaml",
 				Proxies: make([]map[string]any, 0),
 				Filter:  func(result check.Result) bool { return result.Netflix },
 			},
 			{
-				Name:    "disney",
+				Name:    "disney.yaml",
 				Proxies: make([]map[string]any, 0),
 				Filter:  func(result check.Result) bool { return result.Disney },
 			},

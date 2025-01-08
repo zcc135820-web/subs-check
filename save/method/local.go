@@ -35,29 +35,28 @@ func NewLocalSaver() (*LocalSaver, error) {
 }
 
 // SaveToLocal 保存配置到本地文件
-func SaveToLocal(yamlData []byte, key string) error {
+func SaveToLocal(yamlData []byte, filename string) error {
 	saver, err := NewLocalSaver()
 	if err != nil {
 		return fmt.Errorf("创建本地保存器失败: %w", err)
 	}
 
-	return saver.Save(yamlData, key)
+	return saver.Save(yamlData, filename)
 }
 
 // Save 执行保存操作
-func (ls *LocalSaver) Save(yamlData []byte, key string) error {
+func (ls *LocalSaver) Save(yamlData []byte, filename string) error {
 	// 确保输出目录存在
 	if err := ls.ensureOutputDir(); err != nil {
 		return fmt.Errorf("创建输出目录失败: %w", err)
 	}
 
 	// 验证输入参数
-	if err := ls.validateInput(yamlData, key); err != nil {
+	if err := ls.validateInput(yamlData, filename); err != nil {
 		return err
 	}
 
 	// 构建文件路径并保存
-	filename := fmt.Sprintf("%s.yaml", key)
 	filepath := filepath.Join(ls.outputPath, filename)
 
 	if err := os.WriteFile(filepath, yamlData, fileMode); err != nil {
@@ -78,18 +77,18 @@ func (ls *LocalSaver) ensureOutputDir() error {
 }
 
 // validateInput 验证输入参数
-func (ls *LocalSaver) validateInput(yamlData []byte, key string) error {
+func (ls *LocalSaver) validateInput(yamlData []byte, filename string) error {
 	if len(yamlData) == 0 {
 		return fmt.Errorf("yaml数据为空")
 	}
 
-	if key == "" {
-		return fmt.Errorf("key不能为空")
+	if filename == "" {
+		return fmt.Errorf("filename不能为空")
 	}
 
 	// 检查文件名是否包含非法字符
-	if filepath.Base(key) != key {
-		return fmt.Errorf("key包含非法字符: %s", key)
+	if filepath.Base(filename) != filename {
+		return fmt.Errorf("filename包含非法字符: %s", filename)
 	}
 
 	return nil

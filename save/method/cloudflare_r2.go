@@ -19,8 +19,8 @@ const (
 
 // KVPayload 定义上传到R2的数据结构
 type KVPayload struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
+	Filename string `json:"filename"`
+	Value    string `json:"value"`
 }
 
 // R2Uploader 处理R2存储上传的结构体
@@ -40,9 +40,9 @@ func NewR2Uploader() *R2Uploader {
 }
 
 // UploadToR2Storage 上传数据到R2存储的入口函数
-func UploadToR2Storage(yamlData []byte, key string) error {
+func UploadToR2Storage(yamlData []byte, filename string) error {
 	uploader := NewR2Uploader()
-	return uploader.Upload(yamlData, key)
+	return uploader.Upload(yamlData, filename)
 }
 
 // valiR2Config 验证R2配置
@@ -57,16 +57,16 @@ func ValiR2Config() error {
 }
 
 // Upload 执行上传操作
-func (r *R2Uploader) Upload(yamlData []byte, key string) error {
+func (r *R2Uploader) Upload(yamlData []byte, filename string) error {
 	// 验证输入
-	if err := r.validateInput(yamlData, key); err != nil {
+	if err := r.validateInput(yamlData, filename); err != nil {
 		return err
 	}
 
 	// 准备请求数据
 	payload := KVPayload{
-		Key:   key,
-		Value: string(yamlData),
+		Filename: filename,
+		Value:    string(yamlData),
 	}
 
 	jsonData, err := json.Marshal(payload)
@@ -75,16 +75,16 @@ func (r *R2Uploader) Upload(yamlData []byte, key string) error {
 	}
 
 	// 执行带重试的上传
-	return r.uploadWithRetry(jsonData, key)
+	return r.uploadWithRetry(jsonData, filename)
 }
 
 // validateInput 验证输入参数
-func (r *R2Uploader) validateInput(yamlData []byte, key string) error {
+func (r *R2Uploader) validateInput(yamlData []byte, filename string) error {
 	if len(yamlData) == 0 {
 		return fmt.Errorf("yaml数据为空")
 	}
-	if key == "" {
-		return fmt.Errorf("key不能为空")
+	if filename == "" {
+		return fmt.Errorf("filename不能为空")
 	}
 	if r.workerURL == "" || r.token == "" {
 		return fmt.Errorf("Worker配置不完整")
@@ -93,7 +93,7 @@ func (r *R2Uploader) validateInput(yamlData []byte, key string) error {
 }
 
 // uploadWithRetry 带重试机制的上传
-func (r *R2Uploader) uploadWithRetry(jsonData []byte, key string) error {
+func (r *R2Uploader) uploadWithRetry(jsonData []byte, filename string) error {
 	var lastErr error
 
 	for attempt := 0; attempt < maxRetries; attempt++ {
@@ -103,7 +103,7 @@ func (r *R2Uploader) uploadWithRetry(jsonData []byte, key string) error {
 			time.Sleep(retryInterval)
 			continue
 		}
-		log.Infoln("上传成功: %s", key)
+		log.Infoln("上传成功: %s", filename)
 		return nil
 	}
 
