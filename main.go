@@ -12,14 +12,18 @@ import (
 	"github.com/bestruirui/mihomo-check/proxy/ipinfo"
 	"github.com/bestruirui/mihomo-check/save"
 	"github.com/bestruirui/mihomo-check/utils"
+	"github.com/fsnotify/fsnotify"
 	"github.com/metacubex/mihomo/log"
 	"gopkg.in/yaml.v3"
 )
 
 // App 结构体用于管理应用程序状态
 type App struct {
-	configPath string
-	interval   int
+	configPath  string
+	interval    int
+	watcher     *fsnotify.Watcher
+	reloadTimer *time.Timer
+	lastReload  time.Time
 }
 
 // NewApp 创建新的应用实例
@@ -46,6 +50,11 @@ func (app *App) Initialize() error {
 
 	// 初始化IP数据库
 	ipinfo.GetIPdb()
+
+	// 初始化配置文件监听
+	if err := app.initConfigWatcher(); err != nil {
+		return fmt.Errorf("初始化配置文件监听失败: %w", err)
+	}
 
 	app.interval = config.GlobalConfig.CheckInterval
 	return nil
@@ -98,8 +107,68 @@ func (app *App) createDefaultConfig() error {
 	return nil
 }
 
+// initConfigWatcher 初始化配置文件监听
+func (app *App) initConfigWatcher() error {
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		return fmt.Errorf("创建文件监听器失败: %w", err)
+	}
+
+	app.watcher = watcher
+	app.reloadTimer = time.NewTimer(0)
+	<-app.reloadTimer.C
+
+	go func() {
+		for {
+			select {
+			case event, ok := <-watcher.Events:
+				if !ok {
+					return
+				}
+				if event.Op&fsnotify.Write == fsnotify.Write {
+					if app.reloadTimer != nil {
+						app.reloadTimer.Stop()
+					}
+					app.reloadTimer.Reset(100 * time.Millisecond)
+
+					go func() {
+						<-app.reloadTimer.C
+						log.Infoln("配置文件发生变化，正在重新加载")
+						if err := app.loadConfig(); err != nil {
+							log.Errorln("重新加载配置文件失败: %v", err)
+							return
+						}
+						// 更新检查间隔
+						app.interval = config.GlobalConfig.CheckInterval
+					}()
+				}
+			case err, ok := <-watcher.Errors:
+				if !ok {
+					return
+				}
+				log.Errorln("配置文件监听错误: %v", err)
+			}
+		}
+	}()
+
+	// 开始监听配置文件
+	if err := watcher.Add(app.configPath); err != nil {
+		return fmt.Errorf("添加配置文件监听失败: %w", err)
+	}
+
+	log.Infoln("配置文件监听已启动")
+	return nil
+}
+
 // Run 运行应用程序主循环
 func (app *App) Run() {
+	defer func() {
+		app.watcher.Close()
+		if app.reloadTimer != nil {
+			app.reloadTimer.Stop()
+		}
+	}()
+
 	log.Infoln("进度展示: %v", config.GlobalConfig.PrintProgress)
 
 	for {
