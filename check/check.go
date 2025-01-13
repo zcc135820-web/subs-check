@@ -236,7 +236,7 @@ func GetProxyFromSubs() ([]map[string]any, error) {
 		// 添加重试逻辑
 		var resp *http.Response
 		var err error
-		for retries := 0; retries < 30; retries++ {
+		for retries := 0; retries < config.GlobalConfig.SubUrlsReTry; retries++ {
 			resp, err = http.Get(subUrl)
 			if err == nil && resp.StatusCode == 200 {
 				break

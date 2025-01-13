@@ -44,6 +44,9 @@ worker-url: https://example.worker.dev
 # Worker令牌
 worker-token: 1234567890
 
+# 重试次数
+sub-urls-retry: 3
+
 # 订阅地址
 sub-urls:
   - https://example.com/sub.txt

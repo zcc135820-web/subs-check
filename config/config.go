@@ -19,6 +19,7 @@ type Config struct {
 	GithubAPIMirror string   `yaml:"github-api-mirror"`
 	WorkerURL       string   `yaml:"worker-url"`
 	WorkerToken     string   `yaml:"worker-token"`
+	SubUrlsReTry    int      `yaml:"sub-urls-retry"`
 	SubUrls         []string `yaml:"sub-urls"`
 	IPInfo          IPInfo   `yaml:"ip-info"`
 	MihomoApiUrl    string   `yaml:"mihomo-api-url"`
