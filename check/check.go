@@ -245,13 +245,17 @@ func GetProxyFromSubs() ([]map[string]any, error) {
 			time.Sleep(time.Second * time.Duration(retries+1))
 		}
 		if err != nil {
-			return nil, fmt.Errorf("获取订阅链接失败: %w", err)
+			log.Errorln("获取订阅链接失败: %v", err)
+			log.Errorln("订阅链接: %s", subUrl)
+			continue
 		}
 		defer resp.Body.Close()
 
 		data, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return nil, fmt.Errorf("读取配置文件失败: %w", err)
+			log.Errorln("读取配置文件失败: %v", err)
+			log.Errorln("订阅链接: %s", subUrl)
+			continue
 		}
 
 		var config map[string]any
@@ -264,6 +268,7 @@ func GetProxyFromSubs() ([]map[string]any, error) {
 		// 添加空值检查
 		proxyInterface, ok := config["proxies"]
 		if !ok || proxyInterface == nil {
+			log.Errorln("订阅链接: %s 没有proxies", subUrl)
 			continue
 		}
 
