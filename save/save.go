@@ -128,6 +128,12 @@ func chooseSaveMethod() func([]byte, string) error {
 			return method.SaveToLocal
 		}
 		return method.UploadToGist
+	case "webdav":
+		if err := method.ValiWebDAVConfig(); err != nil {
+			log.Errorln("WebDAV配置不完整: %v ,使用本地保存", err)
+			return method.SaveToLocal
+		}
+		return method.UploadToWebDAV
 	case "local":
 		return method.SaveToLocal
 	default:
