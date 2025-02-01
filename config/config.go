@@ -14,6 +14,9 @@ type Config struct {
 	Timeout         int      `yaml:"timeout"`
 	FilterRegex     string   `yaml:"filter-regex"`
 	SaveMethod      string   `yaml:"save-method"`
+	WebDAVURL       string   `yaml:"webdav-url"`
+	WebDAVUsername  string   `yaml:"webdav-username"`
+	WebDAVPassword  string   `yaml:"webdav-password"`
 	GithubToken     string   `yaml:"github-token"`
 	GithubGistID    string   `yaml:"github-gist-id"`
 	GithubAPIMirror string   `yaml:"github-api-mirror"`

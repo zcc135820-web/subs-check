@@ -26,8 +26,13 @@ mihomo-api-url: https://api.mihomo.me/v3/
 mihomo-api-secret: ""
 
 # 保存方法
-# 目前支持的保存方法: r2, local, gist
+# 目前支持的保存方法: r2, local, gist, webdav
 save-method: r2
+
+# webdav
+webdav-url: "https://example.com/dav/"
+webdav-username: "admin"
+webdav-password: "admin"
 
 # gist id
 github-gist-id: ""

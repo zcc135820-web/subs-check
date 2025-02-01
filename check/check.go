@@ -237,7 +237,16 @@ func GetProxyFromSubs() ([]map[string]any, error) {
 		var resp *http.Response
 		var err error
 		for retries := 0; retries < config.GlobalConfig.SubUrlsReTry; retries++ {
-			resp, err = http.Get(subUrl)
+			req, err := http.NewRequest("GET", subUrl, nil)
+			if err != nil {
+				log.Errorln("创建请求失败: %v,重试次数: %d", err, retries+1)
+				time.Sleep(time.Second * time.Duration(retries+1))
+				continue
+			}
+			req.Header.Set("User-Agent", "clash")
+
+			client := &http.Client{}
+			resp, err = client.Do(req)
 			if err == nil && resp.StatusCode == 200 {
 				break
 			}
