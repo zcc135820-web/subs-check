@@ -3,6 +3,7 @@
 ## 预览
 
 ![preview](./doc/images/preview.png)
+![result](./doc/images/results.jpg)
 
 ## 功能
 
@@ -15,6 +16,7 @@
 - 合并多个订阅
 - 节点去重
 - 节点重命名
+- 节点测速
 - 根据解锁情况分类保存
 
 ## 特点
@@ -29,6 +31,8 @@
 - [ ] 支持更多的保存方式
     - [x] 本地
     - [x] cloudflare r2
+    - [x] gist
+    - [x] webdav
     - [ ] 其他
 
 ## 使用方法
