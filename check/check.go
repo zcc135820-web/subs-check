@@ -127,7 +127,7 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 	if httpClient == nil {
 		return nil
 	}
-
+	// log.Infoln("开始检测代理: %v", proxy["name"])
 	cloudflare, err := platfrom.CheckCloudflare(httpClient)
 	if err != nil || !cloudflare {
 		return nil
@@ -166,7 +166,25 @@ func (pc *ProxyChecker) updateProxyName(proxy map[string]any, client *http.Clien
 	if country == "" {
 		country = "未识别"
 	}
-	proxy["name"] = proxyutils.Rename(country)
+
+	// 获取速度
+	if config.GlobalConfig.SpeedTestUrl != "" {
+		speed, err := platfrom.CheckSpeed(client)
+		if err != nil {
+			speed = 0
+		}
+		var speedStr string
+		if speed < 1024 {
+			speedStr = fmt.Sprintf("%dKB/s", speed)
+		} else {
+			speedStr = fmt.Sprintf("%.1fMB/s", float64(speed)/1024)
+		}
+		proxy["name"] = proxyutils.Rename(country) + " | ⬇️ " + speedStr
+		// log.Infoln("proxy: %v", proxy["name"])
+	} else {
+		proxy["name"] = proxyutils.Rename(country)
+	}
+
 }
 
 // showProgress 显示进度条

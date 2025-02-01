@@ -5,8 +5,15 @@ import (
 )
 
 func CheckCloudflare(httpClient *http.Client) (bool, error) {
+	if success, err := checkCloudflareEndpoint(httpClient, "https://gstatic.com/generate_204", 204); err == nil && success {
+		return checkCloudflareEndpoint(httpClient, "https://speed.cloudflare.com", 200)
+	}
+	return false, nil
+}
+
+func checkCloudflareEndpoint(httpClient *http.Client, url string, statusCode int) (bool, error) {
 	// 创建请求
-	req, err := http.NewRequest("GET", "http://cp.cloudflare.com", nil)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return false, err
 	}
@@ -23,9 +30,6 @@ func CheckCloudflare(httpClient *http.Client) (bool, error) {
 		return false, err
 	}
 	defer resp.Body.Close()
-
-	if resp.StatusCode == 204 {
-		return true, nil
-	}
-	return false, nil
+	// log.Infoln("resp.StatusCode: %d ,url: %s", resp.StatusCode, url)
+	return resp.StatusCode == statusCode, nil
 }
