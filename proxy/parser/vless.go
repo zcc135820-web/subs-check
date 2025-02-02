@@ -1,13 +1,14 @@
-package proxytype
+package parser
 
 import (
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
 // 将vless格式的节点转换为clash的节点
-func VlessToClash(data string) (map[string]any, error) {
+func ParseVless(data string) (map[string]any, error) {
 
 	if !strings.HasPrefix(data, "vless://") {
 		return nil, fmt.Errorf("不是vless格式")
@@ -38,7 +39,10 @@ func VlessToClash(data string) (map[string]any, error) {
 	}
 
 	host := hostPort[0]
-	port := hostPort[1]
+	port, err := strconv.Atoi(hostPort[1])
+	if err != nil {
+		return nil, fmt.Errorf("格式错误: 端口格式不正确")
+	}
 
 	// 解析参数
 	params, err := url.ParseQuery(hostAndParams[1])

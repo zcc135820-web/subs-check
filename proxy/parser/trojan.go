@@ -1,13 +1,14 @@
-package proxytype
+package parser
 
 import (
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
-// TrojanToClash 将trojan格式的节点转换为clash格式
-func TrojanToClash(data string) (map[string]any, error) {
+// 将trojan格式的节点转换为clash格式
+func ParseTrojan(data string) (map[string]any, error) {
 	if !strings.HasPrefix(data, "trojan://") {
 		return nil, fmt.Errorf("不是trojan格式")
 	}
@@ -35,15 +36,25 @@ func TrojanToClash(data string) (map[string]any, error) {
 
 	// 解析查询参数
 	params := u.Query()
+	port, err := strconv.Atoi(hostPort[1])
+	if err != nil {
+		return nil, fmt.Errorf("格式错误: 端口格式不正确")
+	}
 
 	// 构建clash格式配置
 	proxy := map[string]any{
 		"name":     name,
 		"type":     "trojan",
 		"server":   hostPort[0],
-		"port":     hostPort[1],
+		"port":     port,
 		"password": password,
-		"network":  params.Get("type"),
+		"network": func() string {
+			if t := params.Get("type"); t != "" {
+				return t
+			} else {
+				return "original"
+			}
+		}(),
 	}
 
 	// 添加TLS配置
