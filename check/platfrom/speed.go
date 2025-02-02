@@ -18,8 +18,6 @@ func CheckSpeed(httpClient *http.Client) (int, error) {
 		Transport: httpClient.Transport,
 	}
 
-	startTime := time.Now()
-
 	resp, err := speedClient.Get(config.GlobalConfig.SpeedTestUrl)
 	if err != nil {
 		log.Debugln("测速请求失败: %v", err)
@@ -27,12 +25,17 @@ func CheckSpeed(httpClient *http.Client) (int, error) {
 	}
 	defer resp.Body.Close()
 
-	// 使用固定大小的缓冲区读取数据
 	buffer := make([]byte, 32*1024) // 32KB 缓冲区
 	totalBytes := 0
+	var startTime time.Time
+	firstRead := true
 
 	for {
 		n, err := resp.Body.Read(buffer)
+		if firstRead && n > 0 {
+			startTime = time.Now()
+			firstRead = false
+		}
 		totalBytes += n
 
 		if err != nil {
@@ -46,6 +49,11 @@ func CheckSpeed(httpClient *http.Client) (int, error) {
 			log.Debugln("读取数据时发生错误: %v", err)
 			return 0, err
 		}
+	}
+
+	// 如果没有读取到任何数据
+	if firstRead {
+		return 0, nil
 	}
 
 	// 计算下载时间（毫秒）
