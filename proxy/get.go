@@ -16,13 +16,14 @@ import (
 
 func GetProxies() ([]map[string]any, error) {
 	log.Infoln("当前共设置了%d个订阅链接", len(config.GlobalConfig.SubUrls))
+	var mihomoProxies []map[string]any
+
 	for _, subUrl := range config.GlobalConfig.SubUrls {
 		data, err := GetDateFromSubs(subUrl)
 		if err != nil {
 			return nil, err
 		}
 		var config map[string]any
-		var mihomoProxies []map[string]any
 		err = yaml.Unmarshal(data, &config)
 		if err != nil {
 			reg, _ := regexp.Compile("(ssr|ss|vmess|trojan|vless|hysteria|hy2|hysteria2)://")
@@ -66,9 +67,8 @@ func GetProxies() ([]map[string]any, error) {
 			}
 			mihomoProxies = append(mihomoProxies, proxyMap)
 		}
-		return mihomoProxies, nil
 	}
-	return nil, nil
+	return mihomoProxies, nil
 }
 
 // 订阅链接中获取数据
