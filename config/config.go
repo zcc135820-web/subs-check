@@ -12,6 +12,7 @@ type Config struct {
 	SpeedTestUrl    string   `yaml:"speed-test-url"`
 	DownloadSize    int      `yaml:"download-size"`
 	UploadSize      int      `yaml:"upload-size"`
+	MinSpeed        int      `yaml:"min-speed"`
 	Timeout         int      `yaml:"timeout"`
 	FilterRegex     string   `yaml:"filter-regex"`
 	SaveMethod      string   `yaml:"save-method"`

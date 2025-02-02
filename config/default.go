@@ -13,6 +13,12 @@ check-interval: 30
 # 超时时间(毫秒)
 timeout: 5000
 
+# 测速地址
+speed-test-url: https://speed.cloudflare.com/__down?bytes=52428800
+
+# 最低测速(KB/s)
+min-speed: 1024
+
 # 下载测试大小(MB)
 download-size: 20
 

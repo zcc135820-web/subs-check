@@ -137,7 +137,13 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 	if err != nil || !google {
 		return nil
 	}
-
+	var speed int
+	if config.GlobalConfig.SpeedTestUrl != "" {
+		speed, err = platfrom.CheckSpeed(httpClient)
+		if err != nil || speed < config.GlobalConfig.MinSpeed {
+			return nil
+		}
+	}
 	// 执行其他平台检测
 	openai, _ := platfrom.CheckOpenai(httpClient)
 	youtube, _ := platfrom.CheckYoutube(httpClient)
@@ -145,7 +151,7 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 	disney, _ := platfrom.CheckDisney(httpClient)
 
 	// 更新代理名称
-	pc.updateProxyName(proxy, httpClient)
+	pc.updateProxyName(proxy, httpClient, speed)
 	pc.incrementAvailable()
 
 	return &Result{
@@ -160,7 +166,7 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 }
 
 // updateProxyName 更新代理名称
-func (pc *ProxyChecker) updateProxyName(proxy map[string]any, client *http.Client) {
+func (pc *ProxyChecker) updateProxyName(proxy map[string]any, client *http.Client, speed int) {
 	ipAddr := ipinfo.GetIPaddrFromAPI(client)
 	country := ipinfo.GetIPCountrynameFromdb(ipAddr)
 	if country == "" {
@@ -169,10 +175,6 @@ func (pc *ProxyChecker) updateProxyName(proxy map[string]any, client *http.Clien
 
 	// 获取速度
 	if config.GlobalConfig.SpeedTestUrl != "" {
-		speed, err := platfrom.CheckSpeed(client)
-		if err != nil {
-			speed = 0
-		}
 		var speedStr string
 		if speed < 1024 {
 			speedStr = fmt.Sprintf("%dKB/s", speed)
