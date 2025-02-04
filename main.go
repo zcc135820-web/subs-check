@@ -9,7 +9,6 @@ import (
 
 	"github.com/bestruirui/mihomo-check/check"
 	"github.com/bestruirui/mihomo-check/config"
-	"github.com/bestruirui/mihomo-check/proxy/ipinfo"
 	"github.com/bestruirui/mihomo-check/save"
 	"github.com/bestruirui/mihomo-check/utils"
 	"github.com/fsnotify/fsnotify"
@@ -47,9 +46,6 @@ func (app *App) Initialize() error {
 	if err := app.loadConfig(); err != nil {
 		return fmt.Errorf("加载配置文件失败: %w", err)
 	}
-
-	// 初始化IP数据库
-	ipinfo.GetIPdb()
 
 	// 初始化配置文件监听
 	if err := app.initConfigWatcher(); err != nil {

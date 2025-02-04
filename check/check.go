@@ -13,7 +13,6 @@ import (
 	"github.com/bestruirui/mihomo-check/check/platfrom"
 	"github.com/bestruirui/mihomo-check/config"
 	proxyutils "github.com/bestruirui/mihomo-check/proxy"
-	"github.com/bestruirui/mihomo-check/proxy/ipinfo"
 	"github.com/metacubex/mihomo/adapter"
 	"github.com/metacubex/mihomo/constant"
 	"github.com/metacubex/mihomo/log"
@@ -173,8 +172,7 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 
 // updateProxyName 更新代理名称
 func (pc *ProxyChecker) updateProxyName(proxy map[string]any, client *http.Client, speed int) {
-	ipAddr := ipinfo.GetIPaddrFromAPI(client)
-	country := ipinfo.GetIPCountrynameFromdb(ipAddr)
+	country := proxyutils.GetProxyCountry(client)
 	if country == "" {
 		country = "未识别"
 	}
@@ -188,7 +186,6 @@ func (pc *ProxyChecker) updateProxyName(proxy map[string]any, client *http.Clien
 			speedStr = fmt.Sprintf("%.1fMB/s", float64(speed)/1024)
 		}
 		proxy["name"] = proxyutils.Rename(country) + " | ⬇️ " + speedStr
-		// log.Infoln("proxy: %v", proxy["name"])
 	} else {
 		proxy["name"] = proxyutils.Rename(country)
 	}

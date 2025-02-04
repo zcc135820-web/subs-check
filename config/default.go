@@ -63,27 +63,4 @@ sub-urls:
   - https://example.com/sub.txt
   - https://example.com/sub2.txt
 
-# IP信息配置
-ip-info:
-  # IP查询API
-  api-url:
-    - http://ifconfig.me
-    - http://ip.sb
-    - http://ifconfig.es
-    - http://ipinfo.io/ip
-    - http://ipecho.net/ip
-    - http://ident.me
-    - http://eth0.me
-    - http://ipaddr.site
-    - http://ipaddress.sh
-    - http://l2.io/ip
-    - http://tnx.nl/ip
-    - http://wgetip.com
-    - http://ip.tyk.nu
-    - http://curlmyip.net
-    - http://ipcalf.com
-    - http://checkip.amazonaws.com
-
-  # IP数据库下载地址
-  ipdb-url: https://cdn.jsdelivr.net/npm/openipdb.ipdb/openipdb.ipdb
 `
