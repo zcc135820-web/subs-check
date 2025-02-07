@@ -45,7 +45,7 @@ docker run -itd \
     --name mihomo-check \
     -v /path/to/config:/app/config \
     --restart=always \
-    bestrui/mihomo-check:latest
+    ghcr.io/bestruirui/subs-check
 ```
 
 ### 源码直接运行
