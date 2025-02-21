@@ -62,3 +62,30 @@ go run main.go -f /path/to/config.yaml
 
 - 本地保存: 将结果保存到本地,默认保存到可执行文件目录下的 output 文件夹
 - r2: 将结果保存到 cloudflare r2 存储桶 [配置方法](./doc/r2.md)
+- gist: 将结果保存到 github gist [配置方法](./doc/gist.md)
+- webdav: 将结果保存到 webdav 服务器 [配置方法](./doc/webdav.md)
+
+## 订阅使用方法
+
+推荐直接裸核运行 tun 模式 
+
+我自己写的Windows下的裸核运行应用 [minihomo](https://github.com/bestruirui/minihomo)
+
+- 下载[base.yaml](./doc/base.yaml)
+- 将文件中对应的链接改为自己的即可
+
+例如:
+
+```yaml
+proxy-providers:
+  ProviderALL:
+    url: https:// #将此处替换为自己的链接
+    type: http
+    interval: 600
+    proxy: DIRECT
+    health-check:
+      enable: true
+      url: http://www.google.com/generate_204
+      interval: 60
+    path: ./proxy_provider/ALL.yaml
+```
