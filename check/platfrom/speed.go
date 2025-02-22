@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/bestruirui/mihomo-check/config"
-	"github.com/metacubex/mihomo/log"
 )
 
 func CheckSpeed(httpClient *http.Client) (int, error) {
@@ -20,7 +19,6 @@ func CheckSpeed(httpClient *http.Client) (int, error) {
 
 	resp, err := speedClient.Get(config.GlobalConfig.SpeedTestUrl)
 	if err != nil {
-		log.Errorln("测速请求失败: %v", err)
 		return 0, err
 	}
 	defer resp.Body.Close()
@@ -46,7 +44,6 @@ func CheckSpeed(httpClient *http.Client) (int, error) {
 			if totalBytes > 0 {
 				break
 			}
-			log.Errorln("读取数据时发生错误: %v", err)
 			return 0, err
 		}
 	}

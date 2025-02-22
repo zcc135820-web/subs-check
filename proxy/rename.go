@@ -1,7 +1,7 @@
 package proxies
 
 import (
-	"strconv"
+	"fmt"
 	"strings"
 )
 
@@ -26,12 +26,14 @@ func GetFlag(countryCode string) string {
 func Rename(country_code string) string {
 	counter++
 
+	counterStr := fmt.Sprintf("%03d", counter)
+
 	if country_code == "" {
-		return "UN" + " " + strconv.Itoa(counter)
+		return "😵‍💫 UN" + " " + counterStr
 	}
 	country_flag := GetFlag(country_code)
 
 	country_name := country_code
 
-	return country_flag + " " + country_name + " " + strconv.Itoa(counter)
+	return country_flag + " " + country_name + " " + counterStr
 }

@@ -20,13 +20,11 @@ import (
 
 // Result 存储节点检测结果
 type Result struct {
-	Proxy      map[string]any
-	Openai     bool
-	Youtube    bool
-	Netflix    bool
-	Google     bool
-	Cloudflare bool
-	Disney     bool
+	Proxy   map[string]any
+	Openai  bool
+	Youtube bool
+	Netflix bool
+	Disney  bool
 }
 
 // ProxyChecker 处理代理检测的主要结构体
@@ -134,23 +132,26 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 		return nil
 	}
 
-	cloudflare, err := platfrom.CheckCloudflare(httpClient)
-	if err != nil || !cloudflare {
-		return nil
-	}
+	for i := 0; i < config.GlobalConfig.QualityLevel; i++ {
+		cloudflare, err := platfrom.CheckCloudflare(httpClient)
+		if err != nil || !cloudflare {
+			return nil
+		}
 
-	google, err := platfrom.CheckGoogle(httpClient)
-	if err != nil || !google {
-		return nil
+		google, err := platfrom.CheckGoogle(httpClient)
+		if err != nil || !google {
+			return nil
+		}
 	}
-
 	var speed int
 	if config.GlobalConfig.SpeedTestUrl != "" {
+		var err error
 		speed, err = platfrom.CheckSpeed(httpClient)
 		if err != nil || speed < config.GlobalConfig.MinSpeed {
 			return nil
 		}
 	}
+
 	// 执行其他平台检测
 	openai, _ := platfrom.CheckOpenai(httpClient)
 	youtube, _ := platfrom.CheckYoutube(httpClient)
@@ -163,13 +164,11 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 	log.SetLevel(log.INFO)
 
 	return &Result{
-		Proxy:      proxy,
-		Cloudflare: cloudflare,
-		Google:     google,
-		Openai:     openai,
-		Youtube:    youtube,
-		Netflix:    netflix,
-		Disney:     disney,
+		Proxy:   proxy,
+		Openai:  openai,
+		Youtube: youtube,
+		Netflix: netflix,
+		Disney:  disney,
 	}
 }
 

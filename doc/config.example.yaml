@@ -10,9 +10,12 @@ check-interval: 30
 # 超时时间(毫秒)(节点的最大延迟)
 timeout: 5000
 
+# 质量等级，等级越高，稳定性越高，等级过高可能导致筛选出来的节点数量过少
+quality-level: 1
+
 # 测速地址(注意 并发数*节点速度<最大网速 否则测速结果不准确)
 # 尽量不要使用Speedtest，Cloudflare提供的下载链接，因为很多节点屏蔽测速网站
-# 建议使用自己上传到Cloudflare R2的文件
+# 建议使用自建测速地址
 speed-test-url: speed-test-url: https://speed.cloudflare.com/__down?bytes=52428800
 
 # 最低测速结果舍弃(KB/s)
