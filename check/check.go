@@ -128,11 +128,12 @@ func (pc *ProxyChecker) worker(wg *sync.WaitGroup) {
 
 // checkProxy 检测单个代理
 func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
+	log.SetLevel(log.ERROR)
 	httpClient := CreateClient(proxy)
 	if httpClient == nil {
 		return nil
 	}
-	// log.Infoln("开始检测代理: %v", proxy["name"])
+
 	cloudflare, err := platfrom.CheckCloudflare(httpClient)
 	if err != nil || !cloudflare {
 		return nil
@@ -142,6 +143,7 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 	if err != nil || !google {
 		return nil
 	}
+
 	var speed int
 	if config.GlobalConfig.SpeedTestUrl != "" {
 		speed, err = platfrom.CheckSpeed(httpClient)
@@ -158,6 +160,7 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 	// 更新代理名称
 	pc.updateProxyName(proxy, httpClient, speed)
 	pc.incrementAvailable()
+	log.SetLevel(log.INFO)
 
 	return &Result{
 		Proxy:      proxy,
@@ -173,10 +176,6 @@ func (pc *ProxyChecker) checkProxy(proxy map[string]any) *Result {
 // updateProxyName 更新代理名称
 func (pc *ProxyChecker) updateProxyName(proxy map[string]any, client *http.Client, speed int) {
 	country := proxyutils.GetProxyCountry(client)
-	if country == "" {
-		country = "未识别"
-	}
-
 	// 获取速度
 	if config.GlobalConfig.SpeedTestUrl != "" {
 		var speedStr string
