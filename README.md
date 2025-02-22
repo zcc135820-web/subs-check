@@ -3,7 +3,6 @@
 ## 预览
 
 ![preview](./doc/images/preview.png)
-![result](./doc/images/results.jpg)
 
 ## 功能
 
@@ -57,6 +56,16 @@ go run main.go -f /path/to/config.yaml
 ### 二进制文件运行
 
 直接运行即可,会在当前目录生成配置文件
+
+### 自建测速地址
+
+- 将 [worker](./cloudflare/worker.js) 部署到 cloudflare workers
+
+- 将 `speed-test-url` 配置为你的 worker 地址
+
+```yaml
+speed-test-url: https://your-worker-url/speedtest?bytes=1000000
+```
 
 ## 保存方法配置
 

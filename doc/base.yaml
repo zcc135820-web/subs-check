@@ -159,7 +159,6 @@ proxy-groups:
       - 🇵🇱 波兰节点
       - 🇮🇹 意大利节点
       - 🇮🇷 伊朗节点
-      - 🇦🇸 亚太节点
     icon: https://cdn.jsdelivr.net/gh/mihomo-party-org/mihomo-party/resources/icon.png
   - name: Cloudflare
     type: select
@@ -188,8 +187,6 @@ proxy-groups:
       - 🇵🇱 波兰节点
       - 🇮🇹 意大利节点
       - 🇮🇷 伊朗节点
-      - 🇦🇸 亚太节点
-      - 其他节点
     icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/cloudflare.png
   - name: Bing
     type: select
@@ -218,8 +215,6 @@ proxy-groups:
       - 🇵🇱 波兰节点
       - 🇮🇹 意大利节点
       - 🇮🇷 伊朗节点
-      - 🇦🇸 亚太节点
-      - 其他节点
     icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/microsoft-bing.png
   - name: Github
     type: select
@@ -247,8 +242,6 @@ proxy-groups:
       - 🇵🇱 波兰节点
       - 🇮🇹 意大利节点
       - 🇮🇷 伊朗节点
-      - 🇦🇸 亚太节点
-      - 其他节点
     icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/github.png
   - name: OpenAI
     type: select
@@ -278,7 +271,6 @@ proxy-groups:
       - 🇵🇱 波兰节点 openai
       - 🇮🇹 意大利节点 openai
       - 🇮🇷 伊朗节点 openai
-      - 🇦🇸 亚太节点 openai
     icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/chatgpt.png
   - name: Netflix
     type: select
@@ -308,7 +300,6 @@ proxy-groups:
       - 🇵🇱 波兰节点 netflix
       - 🇮🇹 意大利节点 netflix
       - 🇮🇷 伊朗节点 netflix
-      - 🇦🇸 亚太节点 netflix
     icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/netflix.png
   - name: Disney+
     type: select
@@ -338,7 +329,6 @@ proxy-groups:
       - 🇵🇱 波兰节点 disney
       - 🇮🇹 意大利节点 disney
       - 🇮🇷 伊朗节点 disney
-      - 🇦🇸 亚太节点 disney
     icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/disney-plus.png
   - name: YouTube
     type: select
@@ -368,7 +358,6 @@ proxy-groups:
       - 🇵🇱 波兰节点 youtube
       - 🇮🇹 意大利节点 youtube
       - 🇮🇷 伊朗节点 youtube
-      - 🇦🇸 亚太节点 youtube
     icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/youtube.png
   - name: TikTok
     type: select
@@ -391,8 +380,6 @@ proxy-groups:
       - 🇵🇱 波兰节点
       - 🇮🇹 意大利节点
       - 🇮🇷 伊朗节点
-      - 🇦🇸 亚太节点
-      - 其他节点
     icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/tiktok.png
   - name: Spotify
     type: select
@@ -415,8 +402,6 @@ proxy-groups:
       - 🇵🇱 波兰节点
       - 🇮🇹 意大利节点
       - 🇮🇷 伊朗节点
-      - 🇦🇸 亚太节点
-      - 其他节点
     icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/spotify.png
   - name: Telegram
     type: select
@@ -443,8 +428,6 @@ proxy-groups:
       - 🇵🇱 波兰节点
       - 🇮🇹 意大利节点
       - 🇮🇷 伊朗节点
-      - 🇦🇸 亚太节点
-      - 其他节点
     icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/telegram.png
   - name: Microsoft
     type: select
@@ -468,8 +451,6 @@ proxy-groups:
       - 🇵🇱 波兰节点
       - 🇮🇹 意大利节点
       - 🇮🇷 伊朗节点
-      - 🇦🇸 亚太节点
-      - 其他节点
     icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/microsoft.png
   - name: Onedrive
     type: select
@@ -493,8 +474,6 @@ proxy-groups:
       - 🇵🇱 波兰节点
       - 🇮🇹 意大利节点
       - 🇮🇷 伊朗节点
-      - 🇦🇸 亚太节点
-      - 其他节点
     icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/microsoft-onedrive.png
   - name: Apple
     type: select
@@ -518,8 +497,6 @@ proxy-groups:
       - 🇵🇱 波兰节点
       - 🇮🇹 意大利节点
       - 🇮🇷 伊朗节点
-      - 🇦🇸 亚太节点
-      - 其他节点
     icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/apple.png
   - name: Gamer
     type: select
@@ -551,8 +528,6 @@ proxy-groups:
       - 🇵🇱 波兰节点
       - 🇮🇹 意大利节点
       - 🇮🇷 伊朗节点
-      - 🇦🇸 亚太节点
-      - 其他节点
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/ForeignMedia.png
   - name: 💪 手动选择
     type: select
@@ -567,6 +542,17 @@ proxy-groups:
     disable-udp: false
     timeout: 2000
     max-failed-times: 3
+    use:
+      - ProviderALL
+  - name: 🎡负载均衡
+    type: load-balance
+    interval: 60
+    lazy: true
+    url: https://gstatic.com/generate_204
+    disable-udp: false
+    timeout: 2000
+    max-failed-times: 3
+    strategy: sticky-sessions
     use:
       - ProviderALL
   - name: 💪 手动选择 openai
@@ -629,17 +615,6 @@ proxy-groups:
     max-failed-times: 3
     use:
       - ProviderOpenai
-  - name: 🎡负载均衡
-    type: load-balance
-    interval: 60
-    lazy: true
-    url: https://gstatic.com/generate_204
-    disable-udp: false
-    timeout: 2000
-    max-failed-times: 3
-    strategy: sticky-sessions
-    use:
-      - ProviderALL
   - name: 🇭🇰 香港节点
     type: url-test
     tolerance: 100
@@ -855,30 +830,6 @@ proxy-groups:
     timeout: 2000
     max-failed-times: 3
     filter: ^(?=.*((?i)🇮🇷|伊朗|(\b(IR|Iran)\b))).*$
-    use:
-      - ProviderALL
-  - name: 🇦🇸 亚太节点
-    type: url-test
-    tolerance: 100
-    interval: 60
-    lazy: true
-    url: https://gstatic.com/generate_204
-    disable-udp: false
-    timeout: 2000
-    max-failed-times: 3
-    filter: ^(?=.*((?i)亚太|(\b(AP|Asia Pacific)\b))).*$
-    use:
-      - ProviderALL
-  - name: 其他节点
-    type: url-test
-    tolerance: 100
-    interval: 60
-    lazy: true
-    url: https://gstatic.com/generate_204
-    disable-udp: false
-    timeout: 2000
-    max-failed-times: 3
-    filter: ^(?=.*((?i)其他|(\b(OTHER)\b))).*$
     use:
       - ProviderALL
   - name: 🇭🇰 香港节点 openai
@@ -1147,21 +1098,6 @@ proxy-groups:
     timeout: 2000
     max-failed-times: 3
     filter: ^(?=.*((?i)🇮🇷|伊朗|(\b(IR|Iran)\b))).*$
-    use:
-      - ProviderOpenai
-    proxies:
-      - REJECT
-    hidden: true
-  - name: 🇦🇸 亚太节点 openai
-    type: url-test
-    tolerance: 100
-    interval: 60
-    lazy: true
-    url: https://openai.com
-    disable-udp: false
-    timeout: 2000
-    max-failed-times: 3
-    filter: ^(?=.*((?i)亚太|(\b(AP|Asia Pacific)\b))).*$
     use:
       - ProviderOpenai
     proxies:
@@ -1438,36 +1374,6 @@ proxy-groups:
     proxies:
       - REJECT
     hidden: true
-  - name: 🇦🇸 亚太节点 netflix
-    type: url-test
-    tolerance: 100
-    interval: 60
-    lazy: true
-    url: https://netflix.com
-    disable-udp: false
-    timeout: 2000
-    max-failed-times: 3
-    filter: ^(?=.*((?i)亚太|(\b(AP|Asia Pacific)\b))).*$
-    use:
-      - ProviderNetflix
-    proxies:
-      - REJECT
-    hidden: true
-  - name: 其他节点 netflix
-    type: url-test
-    tolerance: 100
-    interval: 60
-    lazy: true
-    url: https://netflix.com
-    disable-udp: false
-    timeout: 2000
-    max-failed-times: 3
-    filter: ^(?=.*((?i)其他|(\b(OTHER)\b))).*$
-    use:
-      - ProviderNetflix
-    proxies:
-      - REJECT
-    hidden: true
   - name: 🇭🇰 香港节点 disney
     type: url-test
     tolerance: 100
@@ -1739,36 +1645,6 @@ proxy-groups:
     proxies:
       - REJECT
     hidden: true
-  - name: 🇦🇸 亚太节点 disney
-    type: url-test
-    tolerance: 100
-    interval: 60
-    lazy: true
-    url: https://disney.com
-    disable-udp: false
-    timeout: 2000
-    max-failed-times: 3
-    filter: ^(?=.*((?i)亚太|(\b(AP|Asia Pacific)\b))).*$
-    use:
-      - ProviderDisney
-    proxies:
-      - REJECT
-    hidden: true
-  - name: 其他节点 disney
-    type: url-test
-    tolerance: 100
-    interval: 60
-    lazy: true
-    url: https://disney.com
-    disable-udp: false
-    timeout: 2000
-    max-failed-times: 3
-    filter: ^(?=.*((?i)其他|(\b(OTHER)\b))).*$
-    use:
-      - ProviderDisney
-    proxies:
-      - REJECT
-    hidden: true
   - name: 🇭🇰 香港节点 youtube
     type: url-test
     tolerance: 100
@@ -2035,36 +1911,6 @@ proxy-groups:
     timeout: 2000
     max-failed-times: 3
     filter: ^(?=.*((?i)🇮🇷|伊朗|(\b(IR|Iran)\b))).*$
-    use:
-      - ProviderYoutube
-    proxies:
-      - REJECT
-    hidden: true
-  - name: 🇦🇸 亚太节点 youtube
-    type: url-test
-    tolerance: 100
-    interval: 60
-    lazy: true
-    url: https://youtube.com
-    disable-udp: false
-    timeout: 2000
-    max-failed-times: 3
-    filter: ^(?=.*((?i)亚太|(\b(AP|Asia Pacific)\b))).*$
-    use:
-      - ProviderYoutube
-    proxies:
-      - REJECT
-    hidden: true
-  - name: 其他节点 youtube
-    type: url-test
-    tolerance: 100
-    interval: 60
-    lazy: true
-    url: https://youtube.com
-    disable-udp: false
-    timeout: 2000
-    max-failed-times: 3
-    filter: ^(?=.*((?i)其他|(\b(OTHER)\b))).*$
     use:
       - ProviderYoutube
     proxies:
