@@ -2,10 +2,10 @@ package config
 
 const DefaultConfigTemplate = `
 # 是否显示进度
-print-progress: true
+print-progress: false
 
 # 并发线程数
-concurrent: 20
+concurrent: 200
 
 # 检查间隔(分钟)
 check-interval: 30
@@ -19,7 +19,7 @@ quality-level: 1
 # 测速地址(注意 并发数*节点速度<最大网速 否则测速结果不准确)
 # 尽量不要使用Speedtest，Cloudflare提供的下载链接，因为很多节点屏蔽测速网站
 # 建议使用自己上传到Cloudflare R2的文件
-speed-test-url: https://gh-proxy.henryjiu.workers.dev/https://github.com/AaronFeng753/Waifu2x-Extension-GUI/releases/download/v2.21.12/Waifu2x-Extension-GUI-v2.21.12-Portable.7z
+speed-test-url: https://github.com/AaronFeng753/Waifu2x-Extension-GUI/releases/download/v2.21.12/Waifu2x-Extension-GUI-v2.21.12-Portable.7z
 
 # 最低测速结果舍弃(KB/s)
 min-speed: 1024

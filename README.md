@@ -43,6 +43,7 @@
 docker run -itd \
     --name mihomo-check \
     -v /path/to/config:/app/config \
+    -v /path/to/output:/app/output \
     --restart=always \
     ghcr.io/bestruirui/subs-check
 ```
