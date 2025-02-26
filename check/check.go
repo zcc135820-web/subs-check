@@ -195,6 +195,7 @@ func (pc *ProxyChecker) showProgress(done chan bool) {
 	for {
 		select {
 		case <-done:
+			fmt.Println()
 			return
 		default:
 			pc.mu.Lock()
